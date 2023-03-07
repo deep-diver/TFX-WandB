@@ -22,8 +22,8 @@ Additionally, thisi project will present one extra custom TFX component.
 
 Again, in order to simplfy and focus on the purpose of this project, we are going to use a simple model and dataset as the following.
 
-- `ResNet50` from `tf.keras.applications` module
-- `CIFAR-10 dataset` which will be prepared as TFRecord format from [TensorFlow Datasets](https://www.tensorflow.org/datasets) library.
+- [`ViT`](https://huggingface.co/docs/transformers/model_doc/vit) from HuggingFace's [`transformers`](https://huggingface.co/docs/transformers/index)
+- [`beans`](https://huggingface.co/datasets/beans) dataset which will be prepared as TFRecord format from HuggingFace [`datasets`](https://huggingface.co/docs/datasets/index) library.
 
 ## Todos
 
