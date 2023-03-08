@@ -27,7 +27,7 @@ Again, in order to simplfy and focus on the purpose of this project, we are goin
 
 ## Todos
 
-- [ ] write a notebook to prepare TFRecord dataset
+- [X] write a notebook to prepare TFRecord dataset
 - [ ] write a notebook to run the basic chain of TFX components
 - [ ] write a notebook to add Experiment Tracking feature
 - [ ] port the notebook to standalone TFX pipeline w/o notebook
