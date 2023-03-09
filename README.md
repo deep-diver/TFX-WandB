@@ -30,7 +30,7 @@ Again, in order to simplfy and focus on the purpose of this project, we are goin
 - [X] write a notebook to prepare TFRecord dataset
 - [X] write a notebook to run the basic chain of TFX components
 - [X] extend the notebook to add Experiment Tracking feature
-- [ ] extend the notebook to leverage KerasTuner's HyperModel and Tuner
+- [X] extend the notebook to leverage KerasTuner's HyperModel and Tuner
 - [ ] port the notebook to standalone TFX pipeline w/o notebook
 - [ ] integrate GCP's [Vertex AI](https://cloud.google.com/vertex-ai) with [GitHub Action](https://github.com/features/actions)
 - [ ] write a notebook for the new custom component (`WandBPusher`)
