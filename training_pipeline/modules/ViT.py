@@ -74,7 +74,7 @@ class MyTuner(keras_tuner.RandomSearch):
       model,
       *args,
       epochs=epochs,
-      callbacks=callbacks
+      callbacks=callbacks,
       **kwargs
     )
 
