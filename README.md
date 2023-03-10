@@ -8,19 +8,19 @@ This repository is designed to contain the following implementations towards [Te
 
 ## Project structure
 
-In order to simple verification of the implementation, this repository only uses the following standard TFX components. However, note that you could easily integrate more of TFX components.
+In order to keep the implementation simple, this repository uses only the following standard TFX components. However, note that you could easily integrate more of TFX components.
 
 - `ImportExampleGen`: to bring prepared dataset into the TFX pipeline. 
 - `Trainer`: to train the model with the best found hyper-parameters from `Tuner`
 - `Tuner`: to search the best hyper-parameters. Experiment Tracking feature of W&B will be integrated into this component.
 
-Additionally, thisi project will present one extra custom TFX component.
+Additionally, this project will present a custom TFX component.
 
 - `WandBPusher`: to push a trained model from `Trainer` to the Model Registry in W&B. This component could be integrated with `Evaluator` as well. 
 
 ### Model and dataset
 
-Again, in order to simplfy and focus on the purpose of this project, we are going to use a simple model and dataset as the following.
+Again, in order to simplify and focus on the purpose of this project, we are going to use a simple model and dataset as the following.
 
 - [`ViT`](https://huggingface.co/docs/transformers/model_doc/vit) from HuggingFace's [`transformers`](https://huggingface.co/docs/transformers/index)
 - [`beans`](https://huggingface.co/datasets/beans) dataset which will be prepared as TFRecord format from HuggingFace [`datasets`](https://huggingface.co/docs/datasets/index) library.
