@@ -4,7 +4,7 @@ import tfx.extensions.google_cloud_ai_platform.constants as vertex_const
 import tfx.extensions.google_cloud_ai_platform.trainer.executor as vertex_training_const
 import tfx.extensions.google_cloud_ai_platform.tuner.executor as vertex_tuner_const
 
-PIPELINE_NAME = "vit-e2e-pipeline-advanced-part2"
+PIPELINE_NAME = "tfx-vit-pipeline"
 
 try:
     import google.auth  # pylint: disable=g-import-not-at-top  # pytype: disable=import-error
@@ -40,6 +40,11 @@ TRAIN_LENGTH = 1034
 EVAL_LENGTH = 128
 
 HYPER_PARAMETERS = {
+    "epochs": {
+        "type": "choice",
+        "values": [10]
+    },
+
     "optimizer_type": {
         "type": "choice",
         "values": ["Adam", "AdamW"],
@@ -57,6 +62,11 @@ HYPER_PARAMETERS = {
         "type": "choice",
         "values": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
     }
+}
+
+WANDB_CONFIGS = {
+    "API_KEY": "",
+    "PROJECT": PIPELINE_NAME,
 }
 
 EVAL_CONFIGS = tfma.EvalConfig(
@@ -111,6 +121,7 @@ GCP_AI_PLATFORM_TRAINING_ARGS = {
         ],
     },
     "use_gpu": True,
+    "wandb": WANDB_CONFIGS
 }
 
 fullres_data = os.environ.get("FULL_RES_DATA", "false")
@@ -189,6 +200,7 @@ GCP_AI_PLATFORM_TUNER_ARGS = {
     ),
     "use_gpu": True,
     "hyperparameters": HYPER_PARAMETERS,
+    "wandb": WANDB_CONFIGS
 }
 
 GCP_AI_PLATFORM_SERVING_ARGS = {

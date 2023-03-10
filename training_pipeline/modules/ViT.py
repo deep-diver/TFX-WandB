@@ -40,8 +40,10 @@ class MyHyperModel(keras_tuner.HyperModel):
     return model
 
 class MyTuner(keras_tuner.RandomSearch):
-  def __init__(self, *args, **kwargs):
+  def __init__(self, wandb_project, *args, **kwargs):
     super().__init__(*args, **kwargs)
+
+    self.wandb_project = wandb_project
 
   def run_trial(self, trial, *args, **kwargs):
     hp = trial.hyperparameters
@@ -50,10 +52,11 @@ class MyTuner(keras_tuner.RandomSearch):
     optimizer_type = hp.get("optimizer_type")
     learning_rate = hp.get("learning_rate")
     weight_decay = hp.get("weight_decay")
+    epochs = hp.get("epochs")
 
     log_name = f"tuning@opt-{optimizer_type}@lr-{learning_rate}@wd-{weight_decay}"
     wandb.init(
-      project="_PROJECT_NAME",
+      project=self.wandb_project,
       config=hp.values,
       name=log_name,
     )
@@ -66,6 +69,7 @@ class MyTuner(keras_tuner.RandomSearch):
       hp,
       model,
       *args,
+      epochs=epochs,
       callbacks=[
         wandb.keras.WandbMetricsLogger(log_freq='epoch')
       ],

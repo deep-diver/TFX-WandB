@@ -17,12 +17,12 @@ def get_hyperparameters(hyperparameters) -> keras_tuner.HyperParameters:
     for hp in hyperparameters:
         if hyperparameters[hp]["type"] == "choice":
             hp_set.Choice(
-                hp, 
+                hp,
                 hyperparameters[hp]["values"]
             )            
         elif hyperparameters[hp]["type"] == "float":
             hp_set.Float(
-                hp, 
+                hp,
                 hyperparameters[hp]["min_value"],
                 hyperparameters[hp]["max_value"],
                 sampling=hyperparameters[hp]["sampling"],

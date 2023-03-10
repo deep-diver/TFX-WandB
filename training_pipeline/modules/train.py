@@ -5,7 +5,7 @@ from tfx.components.trainer.fn_args_utils import FnArgs
 import wandb
 
 from .train_data import input_fn
-from .ViT import build_model
+from .ViT import MyHyperModel
 from .signatures import (
     model_exporter,
     transform_features_signature,
@@ -20,7 +20,10 @@ from .utils import INFO
 
 
 def run_fn(fn_args: FnArgs):
-    wandb.login(key="")
+    wandb_configs = fn_args.custom_config["wandb"]
+
+    wandb.login(key=wandb_configs["API_KEY"])
+    wandb_project = wandb_configs["PROJECT"]
 
     custom_config = fn_args.custom_config
     epochs = EPOCHS
@@ -47,9 +50,25 @@ def run_fn(fn_args: FnArgs):
         batch_size=EVAL_BATCH_SIZE,
     )
 
-    hparams = keras_tuner.HyperParameters.from_config(fn_args.hyperparameters)
-    INFO(f"HyperParameters for training: {hparams.get_config()}")
-    model = build_model(hparams)
+    wandb.init(
+      project=wandb_project, 
+      config=fn_args.hyperparameters,
+      name="full-training",
+    )
+    
+    hp = keras_tuner.HyperParameters.from_config(fn_args.hyperparameters)
+    INFO(f"HyperParameters for training: {hp.get_config()}")
+
+    optimizer_type = hp.get("optimizer_type")
+    learning_rate = hp.get("learning_rate")
+    weight_decay = hp.get("weight_decay")
+    epochs = hp.get("epochs")
+
+    wandb.log({"optimizer": optimizer_type})
+    wandb.log({"optimizer": learning_rate})
+    wandb.log({"optimizer": weight_decay})
+
+    model = MyHyperModel().build(hp)
 
     model.fit(
         train_dataset,
@@ -57,7 +76,12 @@ def run_fn(fn_args: FnArgs):
         validation_data=eval_dataset,
         validation_steps=EVAL_LENGTH // TRAIN_BATCH_SIZE,
         epochs=epochs,
+        callbacks=[
+            wandb.keras.WandbMetricsLogger(log_freq='epoch')
+        ],
     )
+
+    wandb.finish()
 
     model.save(
         fn_args.serving_model_dir,
