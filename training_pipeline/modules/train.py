@@ -74,7 +74,7 @@ def run_fn(fn_args: FnArgs):
         steps_per_epoch=TRAIN_LENGTH // TRAIN_BATCH_SIZE,
         validation_data=eval_dataset,
         validation_steps=EVAL_LENGTH // TRAIN_BATCH_SIZE,
-        epochs=epochs,
+        epochs=30,
     )
 
     wandb.finish()

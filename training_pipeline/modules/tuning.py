@@ -3,6 +3,8 @@ import tensorflow_transform as tft
 from tfx.components.trainer.fn_args_utils import FnArgs
 from tfx.v1.components import TunerFnResult
 
+import wandb
+
 from .train_data import input_fn
 from .ViT import MyHyperModel, MyTuner
 
@@ -52,7 +54,7 @@ def tuner_fn(fn_args: FnArgs) -> TunerFnResult:
         fit_kwargs={
             "x": train_dataset,
             "validation_data": eval_dataset,
-            "epoch": 10,
+            "epochs": 10,
             "steps_per_epoch": TRAIN_LENGTH // TRAIN_BATCH_SIZE,
             "validation_steps": EVAL_LENGTH // EVAL_BATCH_SIZE,
         },
