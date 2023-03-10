@@ -21,6 +21,7 @@ class WandBPusherSpec(types.ComponentSpec):
 
     PARAMETERS = {
         "access_token": ExecutionParameter(type=str),
+        "project_name": ExecutionParameter(type=str),
         "run_name":  ExecutionParameter(type=str),
         "model_name": ExecutionParameter(type=str),
         "aliases": ExecutionParameter(type=str),
@@ -55,6 +56,7 @@ class WandBPusher(base_component.BaseComponent):
     def __init__(
         self,
         access_token: str,
+        project_name: str,
         run_name: str,
         model_name: str,
         aliases: str,
@@ -146,6 +148,7 @@ class WandBPusher(base_component.BaseComponent):
 
         spec = WandBPusherSpec(
             access_token=access_token,
+            project_name=project_name,
             run_name=run_name,
             aliases=aliases,
             model_name=model_name,
