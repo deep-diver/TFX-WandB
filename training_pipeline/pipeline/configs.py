@@ -75,6 +75,10 @@ HYPER_PARAMETERS = {
     }
 }
 
+TUNER_CONFIGS = {
+    "num_trials": 15
+}
+
 EVAL_CONFIGS = tfma.EvalConfig(
     model_specs=[
         tfma.ModelSpec(
@@ -206,6 +210,7 @@ GCP_AI_PLATFORM_TUNER_ARGS = {
     ),
     "use_gpu": True,
     "hyperparameters": HYPER_PARAMETERS,
+    "tuner": TUNER_CONFIGS,
     "wandb": WANDB_CONFIGS
 }
 

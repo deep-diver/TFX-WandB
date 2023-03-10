@@ -22,11 +22,12 @@ def tuner_fn(fn_args: FnArgs) -> TunerFnResult:
         wandb_project = wandb_configs["PROJECT"]
 
     hyperparameters = fn_args.custom_config["hyperparameters"]
+    tuner_configs = fn_args.custom_config["tuner"]
 
     tuner = MyTuner(
         wandb_project,
         MyHyperModel(),
-        max_trials=15,
+        max_trials=tuner_configs["num_trials"],
         hyperparameters=get_hyperparameters(hyperparameters),
         allow_new_entries=False,
         objective=keras_tuner.Objective("val_accuracy", "max"),
