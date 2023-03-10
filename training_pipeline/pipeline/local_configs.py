@@ -1,4 +1,4 @@
-TEST_DATA_PATH = "local-data/"
+DATA_PATH = "local-data/"
 
 HYPER_PARAMETERS = {
     "epochs": {
