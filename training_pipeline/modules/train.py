@@ -75,6 +75,9 @@ def run_fn(fn_args: FnArgs):
         validation_data=eval_dataset,
         validation_steps=EVAL_LENGTH // TRAIN_BATCH_SIZE,
         epochs=30,
+        callbacks=[
+            wandb.keras.WandbMetricsLogger(log_freq='epoch')
+        ],        
     )
 
     wandb.finish()
