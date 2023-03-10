@@ -1,3 +1,4 @@
+import tensorflow as tf
 import keras_tuner
 import tensorflow_transform as tft
 from tfx.components.trainer.fn_args_utils import FnArgs
@@ -61,7 +62,7 @@ def run_fn(fn_args: FnArgs):
     learning_rate = hp.get("learning_rate")
     weight_decay = hp.get("weight_decay")
     epochs = hp.get("fulltrain_epochs")
-    callbacks = []
+    callbacks = [tf.keras.callbacks.EarlyStopping(patience=2)]
 
     if wandb_project:
         wandb.log({"optimizer_type": optimizer_type})
