@@ -64,7 +64,7 @@ def run_fn(fn_args: FnArgs):
     callbacks = []
 
     if wandb_project:
-        wandb.log({"optimizer": optimizer_type})
+        wandb.log({"optimizer_type": optimizer_type})
         wandb.log({"learning_rate": learning_rate})
         wandb.log({"weight_decay": weight_decay})
         callbacks.append(wandb.keras.WandbMetricsLogger(log_freq='epoch'))
