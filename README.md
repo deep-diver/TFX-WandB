@@ -32,7 +32,7 @@ Again, in order to simplfy and focus on the purpose of this project, we are goin
 - [X] extend the notebook to add Experiment Tracking feature
 - [X] extend the notebook to leverage KerasTuner's HyperModel and Tuner
 - [X] port the notebook to standalone TFX pipeline w/o notebook
-- [ ] integrate GCP's [Vertex AI](https://cloud.google.com/vertex-ai) with [GitHub Action](https://github.com/features/actions)
+- [X] integrate GCP's [Vertex AI](https://cloud.google.com/vertex-ai) with [GitHub Action](https://github.com/features/actions)
 - [ ] write a notebook for the new custom component (`WandBPusher`)
 - [ ] write a notebook to integrate `WandBPusher` component into the existing TFX pipeline
 - [ ] port `WandBPusher` into the existing standadone TFX pipeline
