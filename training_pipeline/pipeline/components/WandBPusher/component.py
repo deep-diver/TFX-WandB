@@ -21,8 +21,10 @@ class WandBPusherSpec(types.ComponentSpec):
 
     PARAMETERS = {
         "access_token": ExecutionParameter(type=str),
+        "run_name":  ExecutionParameter(type=str),
         "model_name": ExecutionParameter(type=str),
-        "aliases": ExecutionParameter(type=Dict[Text, Any], optional=True),
+        "aliases": ExecutionParameter(type=str),
+        "space_config": ExecutionParameter(type=Dict[Text, Any], optional=True),
     }
     INPUTS = {
         MODEL_KEY: ChannelParameter(type=standard_artifacts.Model, optional=True),
@@ -36,46 +38,48 @@ class WandBPusherSpec(types.ComponentSpec):
 
 
 class WandBPusher(base_component.BaseComponent):
-    """Component for pushing model and application to HuggingFace Hub.
+    """Component for pushing model and application to Weights & Biases
+    Model Registry and HuggingFace Space Hub respectively.
 
-    The `HFPusher` is a [TFX Component](https://www.tensorflow.org/tfx
-    /guide/understanding_tfx_pipelines#component), and its primary pur
-    pose is to push a model from an upstream component such as [`Train
-    er`](https://www.tensorflow.org/tfx/guide/trainer) to HuggingFace
-    Model Hub. It also provides a secondary feature that pushes an app
-    lication to HuggingFace Space Hub.
+    The `WandBPusher` is a [TFX Component](https://www.tensorflow.org/tfx
+    /guide/understanding_tfx_pipelines#component), and its primary purpose 
+    is to push a model from an upstream component such as [`Trainer`](http
+    s://www.tensorflow.org/tfx/guide/trainer) to Weights & Biases Model Re
+    gistry. It also provides a secondary feature that pushes an application 
+    to HuggingFace Space Hub.
     """
 
-    SPEC_CLASS = HFPusherSpec
+    SPEC_CLASS = WandBPusherSpec
     EXECUTOR_SPEC = executor_spec.ExecutorClassSpec(executor.Executor)
 
     def __init__(
         self,
-        username: str,
         access_token: str,
-        repo_name: str,
+        run_name: str,
+        model_name: str,
+        aliases: str,
         space_config: Optional[Dict[Text, Any]] = None,
         model: Optional[types.Channel] = None,
-        model_blessing: Optional[types.Channel] = None,
+        model_blessing: Optional[types.Channel] = None,        
     ):
-        """The HFPusher TFX component.
+        """The WandBPusher TFX component.
 
-        HFPusher pushes a trained or blessed model to HuggingFace Model Hub.
-        This is designed to work as a downstream component of Trainer and o
-        ptionally Evaluator(optional) components. Trainer gives trained mod
-        el, and Evaluator gives information whether the trained model is bl
-        essed or not after evaluation of the model. HFPusher component only
-        publishes a model when it is blessed. If Evaluator is not specified,
-        the input model will always be pushed.
+        WandBPusher pushes a trained or blessed model to Weights & Biases M
+        odel Registry. This is designed to work as a downstream component of 
+        Trainer and optionally Evaluator(optional) components. Trainer gives 
+        trained model, and Evaluator gives information whether the trained m
+        odel is blessed or not after evaluation of the model. HFPusher compo
+        nent only publishes a model when it is blessed. If Evaluator is not 
+        specified, the input model will always be pushed.
 
         Args:
-        username: the ID of HuggingFace Hub
-        access_token: the access token obtained from HuggingFace Hub for the
-            given username. Refer to [this document](https://huggingface.co/
-            docs/hub/security-tokens) to know how to obtain one.
-        repo_name: the name of Model Hub repository where the model will be
-            pushed. This should be unique name under the username within th
-            e Model Hub. repository is identified as {username}/{repo_name}.
+        access_token: the access token obtained from Weights & Biases Refer 
+            to [this document](https://wandb.ai/authorize) to know how to o
+            btain one.
+        run_name: a run name given to a particular run. This is used to ret
+            rieve the underlying unique Run ID. 
+        model_name: 
+        aliases: 
         space_config: optional configurations set when to push an application
             to HuggingFace Space Hub. This is a dictionary, and the following
             information could be set.
@@ -104,6 +108,7 @@ class WandBPusher(base_component.BaseComponent):
                 within the Space Hub. repository is identified as {username}/
                 {repo_name}. If this is not set, the same name to the Model H
                 ub repository will be used.
+
         model: a TFX input channel containing a Model artifact. this is usually
             comes from the standard [`Trainer`]
             (https://www.tensorflow.org/tfx/guide/trainer) component.
@@ -123,10 +128,11 @@ class WandBPusher(base_component.BaseComponent):
         ```py
         trainer = Trainer(...)
         evaluator = Evaluator(...)
-        hf_pusher = HFPusher(
-            username="chansung",
+        hf_pusher = WandBPusher(
             access_token=<YOUR-HUGGINGFACE-ACCESS-TOKEN>,
-            repo_name="my-model",
+            run_name="run_name",
+            model_name="model_name",
+            aliases="best",
             model=trainer.outputs["model"],
             model_blessing=evaluator.outputs["blessing"],
             space_config={
@@ -140,7 +146,9 @@ class WandBPusher(base_component.BaseComponent):
 
         spec = WandBPusherSpec(
             access_token=access_token,
-            repo_name=repo_name,
+            run_name=run_name,
+            aliases=aliases,
+            model_name=model_name,
             space_config=space_config,
             model=model,
             model_blessing=model_blessing,
