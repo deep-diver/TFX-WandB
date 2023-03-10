@@ -65,8 +65,8 @@ def run_fn(fn_args: FnArgs):
     epochs = hp.get("epochs")
 
     wandb.log({"optimizer": optimizer_type})
-    wandb.log({"optimizer": learning_rate})
-    wandb.log({"optimizer": weight_decay})
+    wandb.log({"learning_rate": learning_rate})
+    wandb.log({"weight_decay": weight_decay})
 
     model = MyHyperModel().build(hp)
 
