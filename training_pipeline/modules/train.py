@@ -20,10 +20,10 @@ from .utils import INFO
 
 
 def run_fn(fn_args: FnArgs):
-    wandb_configs = fn_args.custom_config["wandb"]
-
     wandb_project = None
     if fn_args.custom_config and "wandb" in fn_args.custom_config:
+        wandb_configs = fn_args.custom_config["wandb"]
+
         wandb.login(key=wandb_configs["API_KEY"])
         wandb_project = wandb_configs["PROJECT"]
 
@@ -46,10 +46,12 @@ def run_fn(fn_args: FnArgs):
     )
 
     if wandb_project:
+        unique_id = wandb_configs["FINAL_RUN_ID"]
+
         wandb.init(
             project=wandb_project, 
             config=fn_args.hyperparameters,
-            name="full-training",
+            name=unique_id,
         )
     
     hp = keras_tuner.HyperParameters.from_config(fn_args.hyperparameters)

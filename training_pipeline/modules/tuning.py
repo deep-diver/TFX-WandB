@@ -14,12 +14,12 @@ from .hyperparams import get_hyperparameters
 
 
 def tuner_fn(fn_args: FnArgs) -> TunerFnResult:
-    custom_config = fn_args.custom_config
-
     wandb_project = None
-    if custom_config and "wandb" in custom_config:
+    if fn_args.custom_config and "wandb" in fn_args.custom_config:
+        wandb_configs = fn_args.custom_config["wandb"]
+
         wandb.login(key=wandb_configs["API_KEY"])
-        wandb_project = wandb_configs["PROJECT"]        
+        wandb_project = wandb_configs["PROJECT"]
 
     hyperparameters = fn_args.custom_config["hyperparameters"]
 

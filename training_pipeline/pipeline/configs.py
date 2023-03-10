@@ -1,4 +1,6 @@
 import os
+import string
+import random
 import tensorflow_model_analysis as tfma
 import tfx.extensions.google_cloud_ai_platform.constants as vertex_const
 import tfx.extensions.google_cloud_ai_platform.trainer.executor as vertex_training_const
@@ -34,9 +36,13 @@ PREPROCESSING_FN = "modules.preprocessing.preprocessing_fn"
 EXAMPLE_GEN_BEAM_ARGS = None
 TRANSFORM_BEAM_ARGS = None
 
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
 WANDB_CONFIGS = {
     "API_KEY": "$WANDB_ACCESS_TOKEN",
     "PROJECT": PIPELINE_NAME,
+    "FINAL_RUN_ID": f"full-training-{id_generator()}"
 }
 
 EVAL_CONFIGS = tfma.EvalConfig(
