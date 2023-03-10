@@ -8,7 +8,7 @@ This repository is designed to contain the following implementations towards [Te
 
 ## Project structure
 
-In order to simple verification of the implementation, this repository only uses the following standard TFX components. However, note that you could easily integrate more of TFX components.
+In order to keep the implementation simple and verify that it works, this repository only uses the following standard TFX components. However, note that you could easily integrate more of TFX components.
 
 - `ImportExampleGen`: to bring prepared dataset into the TFX pipeline. 
 - `Trainer`: to train the model with the best found hyper-parameters from `Tuner`
