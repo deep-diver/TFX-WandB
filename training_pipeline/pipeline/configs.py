@@ -58,20 +58,20 @@ HYPER_PARAMETERS = {
 
     "optimizer_type": {
         "type": "choice",
-        "values": ["Adam"],
+        "values": ["Adam", "AdamW"],
     },
 
     "learning_rate": {
         "type": "float",
         "min_value": 0.00001,
-        "max_value": 0.00001,
+        "max_value": 0.1,
         "sampling": "log",
         "step": 10
     },
 
     "weight_decay": {
         "type": "choice",
-        "values": [0.1]
+        "values": [0.0, 0.1, 0.2, 0.3, 0.5, 0.6]
     }
 }
 
