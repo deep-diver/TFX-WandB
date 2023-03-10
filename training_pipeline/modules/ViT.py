@@ -61,9 +61,9 @@ class MyTuner(keras_tuner.RandomSearch):
       name=log_name,
     )
 
-    wandb.log({"optimizer": optimizer_type})
-    wandb.log({"optimizer": learning_rate})
-    wandb.log({"optimizer": weight_decay})
+    wandb.log({"optimizer_type": optimizer_type})
+    wandb.log({"learning_rate": learning_rate})
+    wandb.log({"weight_decay": weight_decay})
 
     result = self.hypermodel.fit(
       hp,
