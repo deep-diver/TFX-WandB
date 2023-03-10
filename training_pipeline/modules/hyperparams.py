@@ -19,7 +19,7 @@ def get_hyperparameters(hyperparameters) -> keras_tuner.HyperParameters:
             hp_set.Choice(
                 hp,
                 hyperparameters[hp]["values"]
-            )            
+            )
         elif hyperparameters[hp]["type"] == "float":
             hp_set.Float(
                 hp,

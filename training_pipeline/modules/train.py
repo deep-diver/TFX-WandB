@@ -60,7 +60,7 @@ def run_fn(fn_args: FnArgs):
     optimizer_type = hp.get("optimizer_type")
     learning_rate = hp.get("learning_rate")
     weight_decay = hp.get("weight_decay")
-    epochs = hp.get("epochs")
+    epochs = hp.get("fulltrain_epochs")
     callbacks = []
 
     if wandb_project:

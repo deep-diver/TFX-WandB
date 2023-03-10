@@ -46,10 +46,15 @@ WANDB_CONFIGS = {
 }
 
 HYPER_PARAMETERS = {
-    "epochs": {
+    "finetune_epochs": {
         "type": "choice",
-        "values": [1]
+        "values": [10]
     },
+
+    "fulltrain_epochs": {
+        "type": "choice",
+        "values": [50]
+    },    
 
     "optimizer_type": {
         "type": "choice",
