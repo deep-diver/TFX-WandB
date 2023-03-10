@@ -23,7 +23,7 @@ def run_fn(fn_args: FnArgs):
     wandb_configs = fn_args.custom_config["wandb"]
 
     wandb_project = None
-    if custom_config and "wandb" in custom_config:
+    if fn_args.custom_config and "wandb" in fn_args.custom_config:
         wandb.login(key=wandb_configs["API_KEY"])
         wandb_project = wandb_configs["PROJECT"]
 
