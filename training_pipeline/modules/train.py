@@ -62,6 +62,7 @@ def run_fn(fn_args: FnArgs):
     optimizer_type = hp.get("optimizer_type")
     learning_rate = hp.get("learning_rate")
     weight_decay = hp.get("weight_decay")
+    epochs = hp.get("epochs")
 
     wandb.log({"optimizer": optimizer_type})
     wandb.log({"optimizer": learning_rate})
@@ -74,10 +75,10 @@ def run_fn(fn_args: FnArgs):
         steps_per_epoch=TRAIN_LENGTH // TRAIN_BATCH_SIZE,
         validation_data=eval_dataset,
         validation_steps=EVAL_LENGTH // TRAIN_BATCH_SIZE,
-        epochs=30,
+        epochs=epochs,
         callbacks=[
             wandb.keras.WandbMetricsLogger(log_freq='epoch')
-        ],        
+        ],
     )
 
     wandb.finish()

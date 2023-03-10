@@ -54,7 +54,6 @@ def tuner_fn(fn_args: FnArgs) -> TunerFnResult:
         fit_kwargs={
             "x": train_dataset,
             "validation_data": eval_dataset,
-            "epochs": 10,
             "steps_per_epoch": TRAIN_LENGTH // TRAIN_BATCH_SIZE,
             "validation_steps": EVAL_LENGTH // EVAL_BATCH_SIZE,
         },

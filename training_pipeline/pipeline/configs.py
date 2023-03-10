@@ -40,6 +40,11 @@ TRAIN_LENGTH = 1034
 EVAL_LENGTH = 128
 
 HYPER_PARAMETERS = {
+    "epochs": {
+        "type": "choice",
+        "values": [10]
+    },
+
     "optimizer_type": {
         "type": "choice",
         "values": ["Adam", "AdamW"],

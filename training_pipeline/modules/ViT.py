@@ -52,6 +52,7 @@ class MyTuner(keras_tuner.RandomSearch):
     optimizer_type = hp.get("optimizer_type")
     learning_rate = hp.get("learning_rate")
     weight_decay = hp.get("weight_decay")
+    epochs = hp.get("epochs")
 
     log_name = f"tuning@opt-{optimizer_type}@lr-{learning_rate}@wd-{weight_decay}"
     wandb.init(
@@ -68,6 +69,7 @@ class MyTuner(keras_tuner.RandomSearch):
       hp,
       model,
       *args,
+      epochs=epochs,
       callbacks=[
         wandb.keras.WandbMetricsLogger(log_freq='epoch')
       ],
