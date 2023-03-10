@@ -54,27 +54,31 @@ class MyTuner(keras_tuner.RandomSearch):
     weight_decay = hp.get("weight_decay")
     epochs = hp.get("epochs")
 
-    log_name = f"tuning@opt-{optimizer_type}@lr-{learning_rate}@wd-{weight_decay}"
-    wandb.init(
-      project=self.wandb_project,
-      config=hp.values,
-      name=log_name,
-    )
+    callbacks = []
+    if self.wandb_project:
+      log_name = f"tuning@opt-{optimizer_type}@lr-{learning_rate}@wd-{weight_decay}"
+      wandb.init(
+        project=self.wandb_project,
+        config=hp.values,
+        name=log_name,
+      )
 
-    wandb.log({"optimizer_type": optimizer_type})
-    wandb.log({"learning_rate": learning_rate})
-    wandb.log({"weight_decay": weight_decay})
+      wandb.log({"optimizer_type": optimizer_type})
+      wandb.log({"learning_rate": learning_rate})
+      wandb.log({"weight_decay": weight_decay})
+
+      callbacks.append(wandb.keras.WandbMetricsLogger(log_freq='epoch'))
 
     result = self.hypermodel.fit(
       hp,
       model,
       *args,
       epochs=epochs,
-      callbacks=[
-        wandb.keras.WandbMetricsLogger(log_freq='epoch')
-      ],
+      callbacks=callbacks
       **kwargs
     )
 
-    wandb.finish()
+    if self.wandb_project:
+      wandb.finish()
+      
     return result

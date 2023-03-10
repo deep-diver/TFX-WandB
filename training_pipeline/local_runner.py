@@ -19,7 +19,7 @@ def run():
         local_pipeline.create_pipeline(
             pipeline_name=configs.PIPELINE_NAME,
             pipeline_root=PIPELINE_ROOT,
-            data_path=configs.DATA_PATH,
+            data_path=configs.TEST_DATA_PATH,
             schema_path=configs.SCHEMA_PATH,
             modules={
                 "training_fn": configs.TRAINING_FN,
@@ -27,7 +27,6 @@ def run():
                 "tuner_fn": configs.TUNER_FN,
             },
             hyperparameters=configs.HYPER_PARAMETERS,
-            wandb_configs=configs.WANDB_CONFIGS,
             eval_configs=configs.EVAL_CONFIGS,
             serving_model_dir=SERVING_MODEL_DIR,
             metadata_connection_config=tfx.orchestration.metadata.sqlite_metadata_connection_config(

@@ -22,15 +22,10 @@ from .utils import INFO
 def run_fn(fn_args: FnArgs):
     wandb_configs = fn_args.custom_config["wandb"]
 
-    wandb.login(key=wandb_configs["API_KEY"])
-    wandb_project = wandb_configs["PROJECT"]
-
-    custom_config = fn_args.custom_config
-    epochs = EPOCHS
-
-    if custom_config is not None:
-        if "is_local" in custom_config:
-            epochs = 1
+    wandb_project = None
+    if custom_config and "wandb" in custom_config:
+        wandb.login(key=wandb_configs["API_KEY"])
+        wandb_project = wandb_configs["PROJECT"]
 
     tf_transform_output = tft.TFTransformOutput(fn_args.transform_output)
 
@@ -50,11 +45,12 @@ def run_fn(fn_args: FnArgs):
         batch_size=EVAL_BATCH_SIZE,
     )
 
-    wandb.init(
-      project=wandb_project, 
-      config=fn_args.hyperparameters,
-      name="full-training",
-    )
+    if wandb_project:
+        wandb.init(
+            project=wandb_project, 
+            config=fn_args.hyperparameters,
+            name="full-training",
+        )
     
     hp = keras_tuner.HyperParameters.from_config(fn_args.hyperparameters)
     INFO(f"HyperParameters for training: {hp.get_config()}")
@@ -63,25 +59,26 @@ def run_fn(fn_args: FnArgs):
     learning_rate = hp.get("learning_rate")
     weight_decay = hp.get("weight_decay")
     epochs = hp.get("epochs")
+    callbacks = []
 
-    wandb.log({"optimizer": optimizer_type})
-    wandb.log({"learning_rate": learning_rate})
-    wandb.log({"weight_decay": weight_decay})
+    if wandb_project:
+        wandb.log({"optimizer": optimizer_type})
+        wandb.log({"learning_rate": learning_rate})
+        wandb.log({"weight_decay": weight_decay})
+        callbacks.append(wandb.keras.WandbMetricsLogger(log_freq='epoch'))
 
     model = MyHyperModel().build(hp)
-
     model.fit(
         train_dataset,
         steps_per_epoch=TRAIN_LENGTH // TRAIN_BATCH_SIZE,
         validation_data=eval_dataset,
         validation_steps=EVAL_LENGTH // TRAIN_BATCH_SIZE,
         epochs=epochs,
-        callbacks=[
-            wandb.keras.WandbMetricsLogger(log_freq='epoch')
-        ],
+        callbacks=callbacks
     )
 
-    wandb.finish()
+    if wandb_project:
+        wandb.finish()
 
     model.save(
         fn_args.serving_model_dir,

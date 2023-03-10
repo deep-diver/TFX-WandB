@@ -34,36 +34,6 @@ PREPROCESSING_FN = "modules.preprocessing.preprocessing_fn"
 EXAMPLE_GEN_BEAM_ARGS = None
 TRANSFORM_BEAM_ARGS = None
 
-TRAIN_BATCH_SIZE = 32
-EVAL_BATCH_SIZE = 32
-TRAIN_LENGTH = 1034
-EVAL_LENGTH = 128
-
-HYPER_PARAMETERS = {
-    "epochs": {
-        "type": "choice",
-        "values": [10]
-    },
-
-    "optimizer_type": {
-        "type": "choice",
-        "values": ["Adam", "AdamW"],
-    },
-
-    "learning_rate": {
-        "type": "float",
-        "min_value": 0.00001,
-        "max_value": 0.1,
-        "sampling": "log",
-        "step": 10
-    },
-
-    "weight_decay": {
-        "type": "choice",
-        "values": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
-    }
-}
-
 WANDB_CONFIGS = {
     "API_KEY": "$WANDB_ACCESS_TOKEN",
     "PROJECT": PIPELINE_NAME,
