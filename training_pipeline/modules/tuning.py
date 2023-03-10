@@ -23,7 +23,7 @@ def tuner_fn(fn_args: FnArgs) -> TunerFnResult:
     tuner = MyTuner(
         wandb_project,
         MyHyperModel(),
-        max_trials=6,
+        max_trials=15,
         hyperparameters=get_hyperparameters(hyperparameters),
         allow_new_entries=False,
         objective=keras_tuner.Objective("val_accuracy", "max"),
