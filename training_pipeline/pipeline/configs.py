@@ -66,7 +66,7 @@ HYPER_PARAMETERS = {
 
 WANDB_CONFIGS = {
     "API_KEY": "",
-    "PROJECT": PIPELINE_NAME,
+    "PROJECT": "$WANDB_ACCESS_TOKEN",
 }
 
 EVAL_CONFIGS = tfma.EvalConfig(
