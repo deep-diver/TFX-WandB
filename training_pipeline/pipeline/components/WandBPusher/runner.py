@@ -86,11 +86,13 @@ def deploy_model_for_wandb_model_registry(
 
     # 1-2
     found_run = None
-    for run in api.runs(project_name):
+    for run in wandb.Api().runs(project_name):
         if run.name == run_name:
             found_run = run
 
     if found_run:
+        print(found_run.path)
+
         # 1-3
         wandb.init(
             project=project_name,
@@ -98,12 +100,7 @@ def deploy_model_for_wandb_model_registry(
         )
 
         # 1-4
-        art = wandb.Artifact(
-            model_name, type="model"
-        )
-
-        # 1-5
-        tmp_dir = "tmp_dir"
+        tmp_dir = "model"
         os.mkdir(tmp_dir)
 
         inside_model_path = tf.io.gfile.listdir(model_path)
@@ -124,12 +121,12 @@ def deploy_model_for_wandb_model_registry(
         
         art = wandb.Artifact(model_name, type="model")
         art.add_file(compressed_model_file)
-        
-       swandb.finish()
 
-    step 1-4
-        create an Weights & Biases Artifact and log the model file
-    step 1-5.
-        finish wandb
+        # step 1-5. finish wandb
+        wandb.finish()
 
-    return {}
+    return {
+        "run_path": found_run.path if found_run else "not found",
+        "model_name": model_name,
+        "file": compressed_model_file
+    }
