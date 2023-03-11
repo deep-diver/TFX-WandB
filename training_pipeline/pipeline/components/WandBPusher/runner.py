@@ -7,6 +7,7 @@ from typing import Text, Any, Dict, Optional
 import os
 import mimetypes
 import tempfile
+import tarfile
 import tensorflow as tf
 from absl import logging
 from tfx.utils import io_utils
@@ -116,6 +117,12 @@ def deploy_model_for_wandb_model_registry(
                 tf.io.gfile.copy(content, dst_content)
 
         compressed_model_file = "model.tar.gz"
+        
+        tar = tarfile.open(compressed_model_file, "w:gz")
+        tar.add(tmp_dir)
+        tar.close()
+        
+        wandb.Artifact
 
     step 1-4
         create an Weights & Biases Artifact and log the model file
