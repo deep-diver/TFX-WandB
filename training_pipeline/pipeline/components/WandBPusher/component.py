@@ -23,7 +23,6 @@ class WandBPusherSpec(types.ComponentSpec):
         "access_token": ExecutionParameter(type=str),
         "project_name": ExecutionParameter(type=str),
         "run_name":  ExecutionParameter(type=str),
-        "model_name": ExecutionParameter(type=str),
         "aliases": ExecutionParameter(type=str),
         "space_config": ExecutionParameter(type=Dict[Text, Any], optional=True),
     }
@@ -58,7 +57,6 @@ class WandBPusher(base_component.BaseComponent):
         access_token: str,
         project_name: str,
         run_name: str,
-        model_name: str,
         aliases: str,
         space_config: Optional[Dict[Text, Any]] = None,
         model: Optional[types.Channel] = None,
@@ -151,7 +149,6 @@ class WandBPusher(base_component.BaseComponent):
             project_name=project_name,
             run_name=run_name,
             aliases=aliases,
-            model_name=model_name,
             space_config=space_config,
             model=model,
             model_blessing=model_blessing,

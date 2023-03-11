@@ -47,6 +47,7 @@ def create_pipeline(
     ai_platform_serving_args: Optional[Dict[Text, Any]] = None,
     example_gen_beam_args: Optional[List] = None,
     transform_beam_args: Optional[List] = None,
+    wandb_pusher_args: Optional[Dict[Text, Any]] = None,
 ) -> tfx.dsl.Pipeline:
     components = []
 
@@ -118,12 +119,17 @@ def create_pipeline(
     )
     components.append(evaluator)
 
-    pusher_args = {
-        "model": trainer.outputs["model"],
-        "model_blessing": evaluator.outputs["blessing"],
-        "custom_config": ai_platform_serving_args,
-    }
-    pusher = VertexPusher(**pusher_args)  # pylint: disable=unused-variable
+    # pusher_args = {
+    #     "model": trainer.outputs["model"],
+    #     "model_blessing": evaluator.outputs["blessing"],
+    #     "custom_config": ai_platform_serving_args,
+    # }
+    # pusher = VertexPusher(**pusher_args)  # pylint: disable=unused-variable
+    # components.append(pusher)
+
+    wandb_pusher_args["model"] = trainer.outputs["model"]
+    wandb_pusher_args["model_blessing"] = evaluator.outputs["blessing"]    
+    pusher = WandBPusher(**wandb_pusher_args)
     components.append(pusher)
 
     return pipeline.Pipeline(

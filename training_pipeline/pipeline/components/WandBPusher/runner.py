@@ -27,7 +27,6 @@ def deploy_model_for_wandb_model_registry(
     access_token: str,
     project_name: str,
     run_name: str,
-    model_name: str,
     aliases: str,
     model_path: str,
     model_version: str,
@@ -71,16 +70,6 @@ def deploy_model_for_wandb_model_registry(
         he application automatically when pushed.
     """
 
-# for run in runs:
-#   if run.name == "full-training-4GP04G":
-#     print(run)
-#     print('/'.join(run.path))
-#     wandb.init(project="tfx-vit-pipeline", id='/'.join(run.path))
-#     art = wandb.Artifact("test_model", type="model")
-#     art.add_file("test.pt")
-#     wandb.log_artifact(art)    
-#     wandb.finish()
-
     # 1-1
     wandb.login(key=access_token)
 
@@ -91,17 +80,19 @@ def deploy_model_for_wandb_model_registry(
             found_run = run
 
     if found_run:
-        print(found_run.path)
+        print(f"found_run: {found_run.path}")
 
         # 1-3
         wandb.init(
             project=project_name,
             id='/'.join(found_run.path)
         )
+        print(f"wandb initialized w/ project({project_name}), id({'/'.join(found_run.path)})")
 
         # 1-4
         tmp_dir = "model"
         os.mkdir(tmp_dir)
+        print(f"created temporary dir({tmp_dir})")
 
         inside_model_path = tf.io.gfile.listdir(model_path)
         for content_name in inside_model_path:
@@ -113,20 +104,28 @@ def deploy_model_for_wandb_model_registry(
             else:
                 tf.io.gfile.copy(content, dst_content)
 
+        print(f"copied SavedModel from {model_path} to the temporary dir({tmp_dir})")
+
         compressed_model_file = "model.tar.gz"
         
         tar = tarfile.open(compressed_model_file, "w:gz")
         tar.add(tmp_dir)
         tar.close()
+        print(f"SavedModel compressed into {compressed_model_file}")
         
-        art = wandb.Artifact(model_name, type="model")
-        art.add_file(compressed_model_file)
+        art = wandb.Artifact(model_version, type="model")
+        print(f"wandb Artifact({model_version}) is created")
 
-        # step 1-5. finish wandb
+        art.add_file(compressed_model_file)
+        wandb.log_artifact(art, aliases=[aliases])
+        print(f"added {compressed_model_file} to the Artifact")
+
+        # step 1-5
         wandb.finish()
+        print("finish up w/ wandb.finish()")
 
     return {
         "run_path": found_run.path if found_run else "not found",
-        "model_name": model_name,
+        "model_name": model_version,
         "file": compressed_model_file
     }

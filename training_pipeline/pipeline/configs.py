@@ -39,10 +39,12 @@ TRANSFORM_BEAM_ARGS = None
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
+WANDB_RUN_ID = f"full-training-{id_generator()}"
+
 WANDB_CONFIGS = {
     "API_KEY": "$WANDB_ACCESS_TOKEN",
     "PROJECT": PIPELINE_NAME,
-    "FINAL_RUN_ID": f"full-training-{id_generator()}"
+    "FINAL_RUN_ID": WANDB_RUN_ID
 }
 
 HYPER_PARAMETERS = {
@@ -227,4 +229,14 @@ GCP_AI_PLATFORM_SERVING_ARGS = {
         "min_replica_count": 1,
         "max_replica_count": 1,
     },
+}
+
+WANDB_PUSHER_ARGS = {
+    "access_token": "$WANDB_ACCESS_TOKEN",
+    "project_name": PIPELINE_NAME,
+    "run_name": WANDB_RUN_ID,
+    "aliases": "test_aliases",
+    # "space_config": {
+    #     "app_path": "apps.gradio.semantic_segmentation",
+    # },
 }
