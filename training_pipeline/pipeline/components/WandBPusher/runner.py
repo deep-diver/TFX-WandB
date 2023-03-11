@@ -122,7 +122,10 @@ def deploy_model_for_wandb_model_registry(
         tar.add(tmp_dir)
         tar.close()
         
-        wandb.Artifact
+        art = wandb.Artifact(model_name, type="model")
+        art.add_file(compressed_model_file)
+        
+       swandb.finish()
 
     step 1-4
         create an Weights & Biases Artifact and log the model file
