@@ -4,6 +4,7 @@ learning model to Weights & Biases Model Registry.
 """
 from typing import Text, Any, Dict, Optional
 
+import os
 import mimetypes
 import tempfile
 import tensorflow as tf
@@ -42,11 +43,11 @@ def deploy_model_for_wandb_model_registry(
         find the run path which is a unique ID of a certain Run belonin
         g to the project_name w/ run_name
     step 1-3.
-        init
+        init wandb w/ project_name and the run path from 1-2
     step 1-4
-        write model card.
+        create an Weights & Biases Artifact and log the model file
     step 1-5.
-        push the updated repository to the given branch of remote Model Hub.
+        finish wandb
     step 2. push application to the Space Hub
     step 2-1.
         create a repository on the HuggingFace Hub. if there is an existing r
@@ -69,6 +70,56 @@ def deploy_model_for_wandb_model_registry(
         he application automatically when pushed.
     """
 
+# for run in runs:
+#   if run.name == "full-training-4GP04G":
+#     print(run)
+#     print('/'.join(run.path))
+#     wandb.init(project="tfx-vit-pipeline", id='/'.join(run.path))
+#     art = wandb.Artifact("test_model", type="model")
+#     art.add_file("test.pt")
+#     wandb.log_artifact(art)    
+#     wandb.finish()
+
+    # 1-1
     wandb.login(key=access_token)
+
+    # 1-2
+    found_run = None
+    for run in api.runs(project_name):
+        if run.name == run_name:
+            found_run = run
+
+    if found_run:
+        # 1-3
+        wandb.init(
+            project=project_name,
+            id='/'.join(found_run.path)
+        )
+
+        # 1-4
+        art = wandb.Artifact(
+            model_name, type="model"
+        )
+
+        # 1-5
+        tmp_dir = "tmp_dir"
+        os.mkdir(tmp_dir)
+
+        inside_model_path = tf.io.gfile.listdir(model_path)
+        for content_name in inside_model_path:
+            content = f"{model_path}/{content_name}"
+            dst_content = f"{tmp_dir}/{content_name}"
+
+            if tf.io.gfile.isdir(content):
+                io_utils.copy_dir(content, dst_content)
+            else:
+                tf.io.gfile.copy(content, dst_content)
+
+        compressed_model_file = "model.tar.gz"
+
+    step 1-4
+        create an Weights & Biases Artifact and log the model file
+    step 1-5.
+        finish wandb
 
     return {}
