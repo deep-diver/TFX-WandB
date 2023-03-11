@@ -85,7 +85,8 @@ def deploy_model_for_wandb_model_registry(
         # 1-3
         wandb.init(
             project=project_name,
-            id=found_run.path[-1]
+            id=found_run.path[-1],
+            resume=True
         )
         print(f"wandb initialized w/ project({project_name}), id({'/'.join(found_run.path)})")
 
