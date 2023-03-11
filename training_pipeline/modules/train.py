@@ -46,15 +46,6 @@ def run_fn(fn_args: FnArgs):
         batch_size=EVAL_BATCH_SIZE,
     )
 
-    if wandb_project:
-        unique_id = wandb_configs["FINAL_RUN_ID"]
-
-        wandb.init(
-            project=wandb_project, 
-            config=fn_args.hyperparameters,
-            name=unique_id,
-        )
-    
     hp = keras_tuner.HyperParameters.from_config(fn_args.hyperparameters)
     INFO(f"HyperParameters for training: {hp.get_config()}")
 
@@ -62,9 +53,18 @@ def run_fn(fn_args: FnArgs):
     learning_rate = hp.get("learning_rate")
     weight_decay = hp.get("weight_decay")
     epochs = hp.get("fulltrain_epochs")
+    INFO(f"hps: {optimizer_type}, {learning_rate}, {weight_decay}, {epochs}")
     callbacks = [tf.keras.callbacks.EarlyStopping(patience=2)]
 
     if wandb_project:
+        unique_id = wandb_configs["FINAL_RUN_ID"]
+
+        wandb.init(
+            project=wandb_project,
+            config=fn_args.hyperparameters,
+            name=unique_id,
+        )
+    
         wandb.log({"optimizer_type": optimizer_type})
         wandb.log({"learning_rate": learning_rate})
         wandb.log({"weight_decay": weight_decay})

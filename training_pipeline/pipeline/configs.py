@@ -50,12 +50,12 @@ WANDB_CONFIGS = {
 HYPER_PARAMETERS = {
     "finetune_epochs": {
         "type": "choice",
-        "values": [10]
+        "values": [1]
     },
 
     "fulltrain_epochs": {
         "type": "choice",
-        "values": [50]
+        "values": [1]
     },    
 
     "optimizer_type": {
@@ -78,7 +78,7 @@ HYPER_PARAMETERS = {
 }
 
 TUNER_CONFIGS = {
-    "num_trials": 15
+    "num_trials": 1
 }
 
 EVAL_CONFIGS = tfma.EvalConfig(

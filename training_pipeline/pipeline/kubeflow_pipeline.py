@@ -111,13 +111,13 @@ def create_pipeline(
     ).with_id("latest_blessed_model_resolver")
     components.append(model_resolver)
 
-    evaluator = Evaluator(
-        examples=example_gen.outputs["examples"],
-        model=trainer.outputs["model"],
-        baseline_model=model_resolver.outputs["model"],
-        eval_config=eval_configs,
-    )
-    components.append(evaluator)
+    # evaluator = Evaluator(
+    #     examples=example_gen.outputs["examples"],
+    #     model=trainer.outputs["model"],
+    #     baseline_model=model_resolver.outputs["model"],
+    #     eval_config=eval_configs,
+    # )
+    # components.append(evaluator)
 
     # pusher_args = {
     #     "model": trainer.outputs["model"],
@@ -128,7 +128,7 @@ def create_pipeline(
     # components.append(pusher)
 
     wandb_pusher_args["model"] = trainer.outputs["model"]
-    wandb_pusher_args["model_blessing"] = evaluator.outputs["blessing"]    
+    # wandb_pusher_args["model_blessing"] = evaluator.outputs["blessing"]    
     pusher = WandBPusher(**wandb_pusher_args)
     components.append(pusher)
 
