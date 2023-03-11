@@ -126,7 +126,7 @@ def deploy_model_for_wandb_model_registry(
         print("finish up w/ wandb.finish()")
 
     return {
-        "run_path": found_run.path if found_run else "not found",
+        "run_path": '/'.join(found_run.path) if found_run else "not found",
         "model_name": model_version,
         "file": compressed_model_file
     }
