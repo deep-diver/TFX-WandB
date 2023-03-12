@@ -28,7 +28,7 @@ def deploy_model_for_wandb_model_registry(
     project_name: str,
     run_name: str,
     model_name: str,
-    aliases: List[Text],
+    aliases: List[str],
     model_path: str,
     model_version: str,
     space_config: [Dict[Text, Any]],
@@ -123,7 +123,7 @@ def deploy_model_for_wandb_model_registry(
         print(aliases)
         print(type(model_version))
         aliases.append(model_version)
-        wandb.log_artifact(art, aliases=aliases)
+        wandb.log_artifact(art, aliases=[model_version])
         print(f"added {compressed_model_file} to the Artifact")
 
         # step 1-5
@@ -132,6 +132,7 @@ def deploy_model_for_wandb_model_registry(
 
     return {
         "run_path": '/'.join(found_run.path) if found_run else "not found",
-        "model_name": model_version,
-        "file": compressed_model_file
+        "model_name": model_name,
+        "file": compressed_model_file,
+        "aliases": aliases
     }
