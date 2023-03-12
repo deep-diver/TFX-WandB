@@ -119,6 +119,9 @@ def deploy_model_for_wandb_model_registry(
         print(f"wandb Artifact({model_version}) is created")
 
         art.add_file(compressed_model_file)
+        print(type(aliases))
+        print(aliases)
+        print(type(model_version))
         aliases.append(model_version)
         wandb.log_artifact(art, aliases=aliases)
         print(f"added {compressed_model_file} to the Artifact")

@@ -82,7 +82,7 @@ class Executor(tfx_pusher_executor.Executor):
             run_name=exec_properties.get(_RUN_NAME, None),
             model_name=exec_properties.get(_MODEL_NAME, None),
             model_version=model_version_name,
-            aliases=exec_properties.get(_ALIASES, None),
+            aliases=exec_properties.get(_ALIASES, []),
             model_path=model_path,
             space_config=space_config,
         )
