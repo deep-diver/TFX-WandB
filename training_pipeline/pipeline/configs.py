@@ -235,7 +235,8 @@ WANDB_PUSHER_ARGS = {
     "access_token": "$WANDB_ACCESS_TOKEN",
     "project_name": PIPELINE_NAME,
     "run_name": WANDB_RUN_ID,
-    "aliases": "test_aliases",
+    "model_name": "final_model",
+    "aliases": ["test_aliases"],
     # "space_config": {
     #     "app_path": "apps.gradio.semantic_segmentation",
     # },

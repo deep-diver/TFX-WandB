@@ -2,7 +2,7 @@
 This module handles the workflow to publish machine 
 learning model to Weights & Biases Model Registry.
 """
-from typing import Text, Any, Dict, Optional
+from typing import Text, List, Any, Dict, Optional
 
 import os
 import mimetypes
@@ -27,10 +27,11 @@ def deploy_model_for_wandb_model_registry(
     access_token: str,
     project_name: str,
     run_name: str,
-    aliases: str,
+    model_name: str,
+    aliases: List[Text],
     model_path: str,
     model_version: str,
-    space_config: Optional[Dict[Text, Any]] = None,
+    space_config: [Dict[Text, Any]],
 ) -> Dict[str, str]:
     """Executes ML model deployment workflow to Weights & Biases Model
     Registry. Refer to the WandBPusher component in component.py for g
@@ -114,11 +115,12 @@ def deploy_model_for_wandb_model_registry(
         tar.close()
         print(f"SavedModel compressed into {compressed_model_file}")
         
-        art = wandb.Artifact(model_version, type="model")
+        art = wandb.Artifact(model_name, type="model")
         print(f"wandb Artifact({model_version}) is created")
 
         art.add_file(compressed_model_file)
-        wandb.log_artifact(art, aliases=[aliases])
+        aliases.append(model_version)
+        wandb.log_artifact(art, aliases=aliases)
         print(f"added {compressed_model_file} to the Artifact")
 
         # step 1-5

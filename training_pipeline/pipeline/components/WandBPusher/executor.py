@@ -29,6 +29,7 @@ from pipeline.components.WandBPusher import runner
 _ACCESS_TOKEN_KEY = "access_token"
 _PROJECT_NAME = "project_name"
 _RUN_NAME = "run_name"
+_MODEL_NAME = "model_name"
 _ALIASES = "aliases"
 _SPACE_CONFIG_KEY = "space_config"
 
@@ -79,6 +80,7 @@ class Executor(tfx_pusher_executor.Executor):
             access_token=exec_properties.get(_ACCESS_TOKEN_KEY, None),
             project_name=exec_properties.get(_PROJECT_NAME, None),
             run_name=exec_properties.get(_RUN_NAME, None),
+            model_name=exec_properties.get(_MODEL_NAME, None),
             model_version=model_version_name,
             aliases=exec_properties.get(_ALIASES, None),
             model_path=model_path,

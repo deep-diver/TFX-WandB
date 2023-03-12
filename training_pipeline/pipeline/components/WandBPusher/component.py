@@ -2,7 +2,7 @@
 The WandBPusher is used to push model to Model Registry of Weights and Biases 
 and optionally prototype application to HuggingFace Space Hub.
 """
-from typing import Text, Dict, Any, Optional
+from typing import Text, List, Dict, Any, Optional
 
 from tfx import types
 from tfx.dsl.components.base import base_component, executor_spec
@@ -23,7 +23,8 @@ class WandBPusherSpec(types.ComponentSpec):
         "access_token": ExecutionParameter(type=str),
         "project_name": ExecutionParameter(type=str),
         "run_name":  ExecutionParameter(type=str),
-        "aliases": ExecutionParameter(type=str),
+        "model_name": ExecutionParameter(type=str),
+        "aliases": ExecutionParameter(type=List[Text], optional=True),
         "space_config": ExecutionParameter(type=Dict[Text, Any], optional=True),
     }
     INPUTS = {
@@ -57,7 +58,7 @@ class WandBPusher(base_component.BaseComponent):
         access_token: str,
         project_name: str,
         run_name: str,
-        aliases: str,
+        aliases: Optional[List[Text]] = None,
         space_config: Optional[Dict[Text, Any]] = None,
         model: Optional[types.Channel] = None,
         model_blessing: Optional[types.Channel] = None,        
