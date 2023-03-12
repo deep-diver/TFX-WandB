@@ -58,6 +58,7 @@ class WandBPusher(base_component.BaseComponent):
         access_token: str,
         project_name: str,
         run_name: str,
+        model_name: str,
         aliases: Optional[List[Text]] = None,
         space_config: Optional[Dict[Text, Any]] = None,
         model: Optional[types.Channel] = None,
