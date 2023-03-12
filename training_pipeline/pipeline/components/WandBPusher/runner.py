@@ -117,7 +117,7 @@ def deploy_model_for_wandb_model_registry(
         print(f"SavedModel compressed into {compressed_model_file}")
         
         art = wandb.Artifact(model_name, type="model")
-        print(f"wandb Artifact({model_version}) is created")
+        print(f"wandb Artifact({model_name}) is created")
 
         art.add_file(compressed_model_file)
         aliases = ast.literal_eval(aliases)
@@ -132,6 +132,6 @@ def deploy_model_for_wandb_model_registry(
     return {
         "run_path": '/'.join(found_run.path) if found_run else "not found",
         "model_name": model_name,
+        "model_version": model_version,
         "file": compressed_model_file,
-        "aliases": aliases
     }
