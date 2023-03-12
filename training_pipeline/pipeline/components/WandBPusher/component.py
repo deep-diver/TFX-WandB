@@ -150,6 +150,7 @@ class WandBPusher(base_component.BaseComponent):
             access_token=access_token,
             project_name=project_name,
             run_name=run_name,
+            model_name=model_name,
             aliases=aliases,
             space_config=space_config,
             model=model,
