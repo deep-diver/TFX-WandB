@@ -7,6 +7,7 @@ from typing import Text, List, Any, Dict, Optional
 import os
 import mimetypes
 import tempfile
+import ast
 import tarfile
 import tensorflow as tf
 from absl import logging
@@ -119,11 +120,9 @@ def deploy_model_for_wandb_model_registry(
         print(f"wandb Artifact({model_version}) is created")
 
         art.add_file(compressed_model_file)
-        print(type(aliases))
-        print(aliases)
-        print(type(model_version))
+        aliases = ast.literal_eval(aliases)
         aliases.append(model_version)
-        wandb.log_artifact(art, aliases=[model_version])
+        wandb.log_artifact(art, aliases=aliases)
         print(f"added {compressed_model_file} to the Artifact")
 
         # step 1-5
