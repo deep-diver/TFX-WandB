@@ -70,7 +70,7 @@ class Executor(tfx_pusher_executor.Executor):
             self._MarkNotPushed(model_push)
             return
         model_path = self.GetModelPath(input_dict)
-        model_version_name = f"v{int(time.time())}"
+        model_version_name = f"{int(time.time())}"
 
         space_config = exec_properties.get(_SPACE_CONFIG_KEY, None)
         if space_config is not None:
