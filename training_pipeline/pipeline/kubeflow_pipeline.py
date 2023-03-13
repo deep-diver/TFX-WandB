@@ -88,16 +88,21 @@ def create_pipeline(
             example_gen_pb2.Input.Split(name="eval", pattern="val-*.tfrec"),
         ]
     )
-    tune_example_gen = ImportExampleGen(input_base=data_path, input_config=tune_input_config)
+    tune_example_gen = ImportExampleGen(
+        input_base=data_path, 
+        input_config=tune_input_config
+    ).with_id("Tune_ExampleGen")
     components.append(tune_example_gen)
 
-    tune_statistics_gen = StatisticsGen(examples=tune_example_gen.outputs["examples"])
+    tune_statistics_gen = StatisticsGen(
+        examples=tune_example_gen.outputs["examples"]
+    ).with_id("Tune_StatisticsGen")
     components.append(tune_statistics_gen)
 
     tune_example_validator = ExampleValidator(
         statistics=tune_statistics_gen.outputs["statistics"],
         schema=schema_gen.outputs["schema"],
-    )
+    ).with_id("Tune_ExampleValidator")
     components.append(tune_example_validator)
 
     tune_transform_args = {
@@ -105,7 +110,7 @@ def create_pipeline(
         "schema": schema_gen.outputs["schema"],
         "preprocessing_fn": modules["preprocessing_fn"],
     }
-    tune_transform = Transform(**tune_transform_args)
+    tune_transform = Transform(**tune_transform_args).with_id("Tune_Transform")
     components.append(tune_transform)
 
     tuner = VertexTuner(
