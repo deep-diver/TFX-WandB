@@ -58,8 +58,6 @@ def create_pipeline(
         ]
     )
     example_gen = ImportExampleGen(input_base=data_path, input_config=input_config)
-    if example_gen_beam_args is not None:
-        example_gen.with_beam_pipeline_args(example_gen_beam_args)
     components.append(example_gen)
 
     statistics_gen = StatisticsGen(examples=example_gen.outputs["examples"])
@@ -80,14 +78,40 @@ def create_pipeline(
         "preprocessing_fn": modules["preprocessing_fn"],
     }
     transform = Transform(**transform_args)
-    if transform_beam_args is not None:
-        transform.with_beam_pipeline_args(transform_beam_args)
     components.append(transform)
+
+    # tuner
+
+    tune_input_config = example_gen_pb2.Input(
+        splits=[
+            example_gen_pb2.Input.Split(name="train", pattern="train-00-*.tfrec"),
+            example_gen_pb2.Input.Split(name="eval", pattern="val-*.tfrec"),
+        ]
+    )
+    tune_example_gen = ImportExampleGen(input_base=data_path, input_config=tune_input_config)
+    components.append(tune_example_gen)
+
+    tune_statistics_gen = StatisticsGen(examples=tune_example_gen.outputs["examples"])
+    components.append(tune_statistics_gen)
+
+    tune_example_validator = ExampleValidator(
+        statistics=tune_statistics_gen.outputs["statistics"],
+        schema=schema_gen.outputs["schema"],
+    )
+    components.append(tune_example_validator)
+
+    tune_transform_args = {
+        "examples": tune_example_gen.outputs["examples"],
+        "schema": schema_gen.outputs["schema"],
+        "preprocessing_fn": modules["preprocessing_fn"],
+    }
+    tune_transform = Transform(**tune_transform_args)
+    components.append(tune_transform)
 
     tuner = VertexTuner(
         tuner_fn=modules["tuner_fn"],
-        examples=transform.outputs["transformed_examples"],
-        transform_graph=transform.outputs["transform_graph"],
+        examples=tune_transform.outputs["transformed_examples"],
+        transform_graph=tune_transform.outputs["transform_graph"],
         tune_args=tuner_args,
         custom_config=ai_platform_tuner_args,
     )
