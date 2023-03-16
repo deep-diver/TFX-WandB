@@ -61,7 +61,7 @@ def run_fn(fn_args: FnArgs):
 
         wandb.init(
             project=wandb_project,
-            configs=hp.values,
+            config=hp.values,
             name=unique_id,
         )
     
