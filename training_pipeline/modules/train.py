@@ -21,11 +21,14 @@ from .utils import INFO
 
 
 def run_fn(fn_args: FnArgs):
+    hp = keras_tuner.HyperParameters.from_config(fn_args.hyperparameters)
+    INFO(f"HyperParameters for training: {hp.get_config()}")
+
     wandb_project = None
     if fn_args.custom_config and "wandb" in fn_args.custom_config:
         wandb_configs = fn_args.custom_config["wandb"]
 
-        wandb.login(key=wandb_configs["API_KEY"])
+        wandb.login(key=wandb_configs["API_KEY"], configs=hp.values)
         wandb_project = wandb_configs["PROJECT"]
 
     tf_transform_output = tft.TFTransformOutput(fn_args.transform_output)
@@ -45,9 +48,6 @@ def run_fn(fn_args: FnArgs):
         is_train=False,
         batch_size=EVAL_BATCH_SIZE,
     )
-
-    hp = keras_tuner.HyperParameters.from_config(fn_args.hyperparameters)
-    INFO(f"HyperParameters for training: {hp.get_config()}")
 
     optimizer_type = hp.get("optimizer_type")
     learning_rate = hp.get("learning_rate")
