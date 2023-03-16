@@ -28,7 +28,7 @@ def run_fn(fn_args: FnArgs):
     if fn_args.custom_config and "wandb" in fn_args.custom_config:
         wandb_configs = fn_args.custom_config["wandb"]
 
-        wandb.login(key=wandb_configs["API_KEY"], configs=hp.values)
+        wandb.login(key=wandb_configs["API_KEY"])
         wandb_project = wandb_configs["PROJECT"]
 
     tf_transform_output = tft.TFTransformOutput(fn_args.transform_output)
@@ -61,7 +61,7 @@ def run_fn(fn_args: FnArgs):
 
         wandb.init(
             project=wandb_project,
-            config=fn_args.hyperparameters,
+            configs=hp.values,
             name=unique_id,
         )
     
