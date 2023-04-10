@@ -8,7 +8,6 @@ import os
 import mimetypes
 import tempfile
 import ast
-import tarfile
 import tensorflow as tf
 from absl import logging
 from tfx.utils import io_utils
@@ -108,23 +107,16 @@ def deploy_model_for_wandb_model_registry(
                 tf.io.gfile.copy(content, dst_content)
 
         print(f"copied SavedModel from {model_path} to the temporary dir({tmp_dir})")
-
-        compressed_model_file = "model.tar.gz"
-        
-        tar = tarfile.open(compressed_model_file, "w:gz")
-        tar.add(tmp_dir)
-        tar.close()
-        print(f"SavedModel compressed into {compressed_model_file}")
         
         art = wandb.Artifact(model_name, type="model")
         print(f"wandb Artifact({model_name}) is created")
 
-        art.add_file(compressed_model_file)
+        art.add_file(tmp_dir)
         list_aliases = ast.literal_eval(aliases)
         list_aliases.append(model_version)
         print(list_aliases)
         wandb.log_artifact(art, aliases=list_aliases)
-        print(f"added {compressed_model_file} to the Artifact")
+        print(f"added {tmp_dir} to the Artifact")
 
         # step 1-5
         wandb.finish()
