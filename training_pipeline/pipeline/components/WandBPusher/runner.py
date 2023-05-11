@@ -323,13 +323,13 @@ def deploy_model_for_wandb_model_registry(
                 "app_path is required when space_config is set."
             )
 
-        if "username" not in space_config \
-            or "repo_name" not in space_config:
+        if "hf_username" not in space_config \
+            or "hf_repo_name" not in space_config:
             raise RuntimeError(
                 "the username or repo_name is not provided. "
             )
 
-        if "access_token" not in space_config:
+        if "hf_access_token" not in space_config:
             raise RuntimeError(
                 "the access token to Hugging Face Hub is not provided. "
             )            
