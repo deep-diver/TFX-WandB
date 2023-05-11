@@ -231,13 +231,18 @@ GCP_AI_PLATFORM_SERVING_ARGS = {
     },
 }
 
+GRADIO_APP_PATH = "huggingface.apps.gradio"
+
 WANDB_PUSHER_ARGS = {
     "access_token": "$WANDB_ACCESS_TOKEN",
     "project_name": PIPELINE_NAME,
     "run_name": WANDB_RUN_ID,
     "model_name": "final_model",
     "aliases": ["test_aliases"],
-    # "space_config": {
-    #     "app_path": "apps.gradio.semantic_segmentation",
-    # },
+    "space_config": {
+        "app_path": GRADIO_APP_PATH,
+        "hf_username": "chansung",
+        "hf_repo_name": PIPELINE_NAME,
+        "hf_access_token": "$HF_ACCESS_TOKEN"
+    },
 }
