@@ -1,3 +1,4 @@
+import tensorflow as tf
 import keras_tuner
 import tensorflow_transform as tft
 from tfx.components.trainer.fn_args_utils import FnArgs
@@ -20,10 +21,13 @@ from .utils import INFO
 
 
 def run_fn(fn_args: FnArgs):
-    wandb_configs = fn_args.custom_config["wandb"]
+    hp = keras_tuner.HyperParameters.from_config(fn_args.hyperparameters)
+    INFO(f"HyperParameters for training: {hp.get_config()}")
 
     wandb_project = None
-    if custom_config and "wandb" in custom_config:
+    if fn_args.custom_config and "wandb" in fn_args.custom_config:
+        wandb_configs = fn_args.custom_config["wandb"]
+
         wandb.login(key=wandb_configs["API_KEY"])
         wandb_project = wandb_configs["PROJECT"]
 
@@ -45,24 +49,23 @@ def run_fn(fn_args: FnArgs):
         batch_size=EVAL_BATCH_SIZE,
     )
 
-    if wandb_project:
-        wandb.init(
-            project=wandb_project, 
-            config=fn_args.hyperparameters,
-            name="full-training",
-        )
-    
-    hp = keras_tuner.HyperParameters.from_config(fn_args.hyperparameters)
-    INFO(f"HyperParameters for training: {hp.get_config()}")
-
     optimizer_type = hp.get("optimizer_type")
     learning_rate = hp.get("learning_rate")
     weight_decay = hp.get("weight_decay")
-    epochs = hp.get("epochs")
-    callbacks = []
+    epochs = hp.get("fulltrain_epochs")
+    INFO(f"hps: {optimizer_type}, {learning_rate}, {weight_decay}, {epochs}")
+    callbacks = [tf.keras.callbacks.EarlyStopping(patience=2)]
 
     if wandb_project:
-        wandb.log({"optimizer": optimizer_type})
+        unique_id = wandb_configs["FINAL_RUN_ID"]
+
+        wandb.init(
+            project=wandb_project,
+            config=hp.values,
+            name=unique_id,
+        )
+    
+        wandb.log({"optimizer_type": optimizer_type})
         wandb.log({"learning_rate": learning_rate})
         wandb.log({"weight_decay": weight_decay})
         callbacks.append(wandb.keras.WandbMetricsLogger(log_freq='epoch'))
@@ -74,7 +77,7 @@ def run_fn(fn_args: FnArgs):
         validation_data=eval_dataset,
         validation_steps=EVAL_LENGTH // TRAIN_BATCH_SIZE,
         epochs=epochs,
-        callbacks=callbacks
+        callbacks=callbacks,
     )
 
     if wandb_project:

@@ -1,4 +1,6 @@
 import os
+import string
+import random
 import tensorflow_model_analysis as tfma
 import tfx.extensions.google_cloud_ai_platform.constants as vertex_const
 import tfx.extensions.google_cloud_ai_platform.trainer.executor as vertex_training_const
@@ -34,9 +36,49 @@ PREPROCESSING_FN = "modules.preprocessing.preprocessing_fn"
 EXAMPLE_GEN_BEAM_ARGS = None
 TRANSFORM_BEAM_ARGS = None
 
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+WANDB_RUN_ID = f"full-training-{id_generator()}"
+
 WANDB_CONFIGS = {
     "API_KEY": "$WANDB_ACCESS_TOKEN",
     "PROJECT": PIPELINE_NAME,
+    "FINAL_RUN_ID": WANDB_RUN_ID
+}
+
+HYPER_PARAMETERS = {
+    "finetune_epochs": {
+        "type": "choice",
+        "values": [10]
+    },
+
+    "fulltrain_epochs": {
+        "type": "choice",
+        "values": [30]
+    },    
+
+    "optimizer_type": {
+        "type": "choice",
+        "values": ["Adam", "AdamW"],
+    },
+
+    "learning_rate": {
+        "type": "float",
+        "min_value": 0.00001,
+        "max_value": 0.1,
+        "sampling": "log",
+        "step": 10
+    },
+
+    "weight_decay": {
+        "type": "choice",
+        "values": [0.0, 0.1, 0.2, 0.3, 0.5, 0.6]
+    }
+}
+
+TUNER_CONFIGS = {
+    "num_trials": 15
 }
 
 EVAL_CONFIGS = tfma.EvalConfig(
@@ -170,6 +212,7 @@ GCP_AI_PLATFORM_TUNER_ARGS = {
     ),
     "use_gpu": True,
     "hyperparameters": HYPER_PARAMETERS,
+    "tuner": TUNER_CONFIGS,
     "wandb": WANDB_CONFIGS
 }
 
@@ -185,5 +228,21 @@ GCP_AI_PLATFORM_SERVING_ARGS = {
         "machine_type": "n1-standard-4",
         "min_replica_count": 1,
         "max_replica_count": 1,
+    },
+}
+
+GRADIO_APP_PATH = "huggingface.apps.gradio"
+
+WANDB_PUSHER_ARGS = {
+    "access_token": "$WANDB_ACCESS_TOKEN",
+    "project_name": PIPELINE_NAME,
+    "run_name": WANDB_RUN_ID,
+    "model_name": "final_model",
+    "aliases": ["test_aliases"],
+    "space_config": {
+        "app_path": GRADIO_APP_PATH,
+        "hf_username": "chansung",
+        "hf_repo_name": PIPELINE_NAME,
+        "hf_access_token": "$HF_ACCESS_TOKEN"
     },
 }

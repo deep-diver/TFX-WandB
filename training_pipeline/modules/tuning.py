@@ -14,19 +14,20 @@ from .hyperparams import get_hyperparameters
 
 
 def tuner_fn(fn_args: FnArgs) -> TunerFnResult:
-    custom_config = fn_args.custom_config
-
     wandb_project = None
-    if custom_config and "wandb" in custom_config:
+    if fn_args.custom_config and "wandb" in fn_args.custom_config:
+        wandb_configs = fn_args.custom_config["wandb"]
+
         wandb.login(key=wandb_configs["API_KEY"])
-        wandb_project = wandb_configs["PROJECT"]        
+        wandb_project = wandb_configs["PROJECT"]
 
     hyperparameters = fn_args.custom_config["hyperparameters"]
+    tuner_configs = fn_args.custom_config["tuner"]
 
     tuner = MyTuner(
         wandb_project,
         MyHyperModel(),
-        max_trials=15,
+        max_trials=tuner_configs["num_trials"],
         hyperparameters=get_hyperparameters(hyperparameters),
         allow_new_entries=False,
         objective=keras_tuner.Objective("val_accuracy", "max"),
@@ -57,7 +58,7 @@ def tuner_fn(fn_args: FnArgs) -> TunerFnResult:
         fit_kwargs={
             "x": train_dataset,
             "validation_data": eval_dataset,
-            "steps_per_epoch": TRAIN_LENGTH // TRAIN_BATCH_SIZE,
-            "validation_steps": EVAL_LENGTH // EVAL_BATCH_SIZE,
+            "steps_per_epoch": 1,
+            "validation_steps": 1,
         },
     )
