@@ -37,32 +37,6 @@ def _is_text_file(path):
     
     return False
 
-def _create_remote_repo(
-    access_token: str, repo_id: str, repo_type: str = "space", space_sdk: str = None
-):
-    """Create a remote repository on HuggingFace Hub platform. HTTPError
-    exception is raised when the repository already exists
-
-    Args:
-        access_token (str): Hugging Face Hub token with write access.
-        repo_id (str): Repository ID to push the repository.
-        repo_type (str, optional): Repository type. Defaults to "model".
-        space_sdk (str, optional): SDK for Space. Defaults to None.
-    """
-
-    logging.info(f"repo_id: {repo_id}")
-    try:
-        HfApi().create_repo(
-            token=access_token,
-            repo_id=repo_id,
-            repo_type=repo_type,
-            space_sdk=space_sdk,
-        )
-    except HTTPError:
-        logging.warning(
-            f"this warning is expected if {repo_id} repository already exists"
-        )
-
 def _replace_files(src_paths, dst_path):
     """replace the contents(files/folders) of the repository with the
     latest contents"""
@@ -164,7 +138,7 @@ def _replace_placeholders(
     _replace_placeholders_in_files(target_dir, placeholder_to_replace)
 
 def _create_remote_repo(
-    access_token: str, repo_id: str, repo_type: str = "model", space_sdk: str = None
+    access_token: str, repo_id: str, repo_type: str = "space", space_sdk: str = None
 ):
     """create a remote repository on HuggingFace Hub platform. HTTPError
     exception is raised when the repository already exists"""
