@@ -48,7 +48,7 @@ def get_predictions(wb_token, image):
     
     if MODEL is None:
         wandb.login(key=wb_token)
-        wandb.init(project="$MODEL_PROJECT")
+        wandb.init(project="$MODEL_PROJECT", id="$MODEL_RUN", resume=True)
         path = wandb.use_artifact('tfx-vit-pipeline/$MODEL_NAME:$MODEL_VERSION', type='model').download()
 
         tar = tarfile.open(f"{path}/$MODEL_FILENAME")

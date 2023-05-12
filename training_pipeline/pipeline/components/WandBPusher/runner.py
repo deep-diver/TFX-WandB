@@ -21,11 +21,13 @@ from requests.exceptions import HTTPError
 import wandb
 
 _MODEL_PROJECT_KEY = "MODEL_REPO_ID"
+_MODEL_RUN_KEY = "MODEL_RUN_ID"
 _MODEL_NAME_KEY = "MODEL_REPO_URL"
 _MODEL_VERSION_KEY = "MODEL_VERSION"
 _MODEL_FILENAME_KEY = "MODEL_FILENAME"
 
 _DEFAULT_MODEL_REPO_PLACEHOLDER_KEY = "$MODEL_PROJECT"
+_DEFAULT_RUN_PLACEHOLDER_KEY = "$MODEL_RUN"
 _DEFAULT_MODEL_URL_PLACEHOLDER_KEY = "$MODEL_NAME"
 _DEFAULT_MODEL_VERSION_PLACEHOLDER_KEY = "$MODEL_VERSION"
 _DEFAULT_MODEL_FILENAME_KEY = "$MODEL_FILENAME"
@@ -110,6 +112,7 @@ def _replace_placeholders(
     target_dir: str,
     placeholders: Dict[str, str],
     model_project: str,
+    model_run: str,
     model_name: str,
     model_version: str,
     model_filename: str,
@@ -122,16 +125,18 @@ def _replace_placeholders(
     if placeholders is None:
         placeholders = {
             _MODEL_PROJECT_KEY: _DEFAULT_MODEL_REPO_PLACEHOLDER_KEY,
+            _MODEL_RUN_KEY: _DEFAULT_RUN_PLACEHOLDER_KEY,
             _MODEL_NAME_KEY: _DEFAULT_MODEL_URL_PLACEHOLDER_KEY,
             _MODEL_VERSION_KEY: _DEFAULT_MODEL_VERSION_PLACEHOLDER_KEY,
-            _MODEL_FILENAME_KEY: _DEFAULT_MODEL_FILENAME_KEY
+            _MODEL_FILENAME_KEY: _DEFAULT_MODEL_FILENAME_KEY,
         }
 
     placeholder_to_replace = {
         placeholders[_MODEL_PROJECT_KEY]: model_project,
         placeholders[_MODEL_NAME_KEY]: model_name,
         placeholders[_MODEL_VERSION_KEY]: model_version,
-        placeholders[_MODEL_FILENAME_KEY]: model_filename
+        placeholders[_MODEL_FILENAME_KEY]: model_filename,
+        placeholders[_MODEL_RUN_KEY]: model_run
     }
     if additional_replacements is not None:
         placeholder_to_replace = {**placeholder_to_replace, **additional_replacements}
@@ -290,75 +295,76 @@ def deploy_model_for_wandb_model_registry(
         outputs["model_version"] = model_version
         outputs["file"] = compressed_model_file
 
-    if space_config is not None:
-        if "app_path" not in space_config:
-            raise RuntimeError(
-                "the app_path is not provided. "
-                "app_path is required when space_config is set."
+        if space_config is not None:
+            if "app_path" not in space_config:
+                raise RuntimeError(
+                    "the app_path is not provided. "
+                    "app_path is required when space_config is set."
+                )
+
+            if "hf_username" not in space_config \
+                or "hf_repo_name" not in space_config:
+                raise RuntimeError(
+                    "the username or repo_name is not provided. "
+                )
+
+            if "hf_access_token" not in space_config:
+                raise RuntimeError(
+                    "the access token to Hugging Face Hub is not provided. "
+                )            
+
+            repo_url_prefix = "https://huggingface.co"
+            repo_id = f'{space_config["hf_username"]}/{space_config["hf_repo_name"]}'
+            repo_url = f"{repo_url_prefix}/spaces/{repo_id}"
+
+            app_path = space_config["app_path"]
+            app_path = app_path.replace(".", "/")
+
+            access_token = space_config["hf_access_token"]
+            space_sdk = space_config.get("space_sdk", "gradio")
+
+            # step 2-1
+            _create_remote_repo(
+                access_token=access_token,
+                repo_id=repo_id,
+                space_sdk=space_sdk
             )
 
-        if "hf_username" not in space_config \
-            or "hf_repo_name" not in space_config:
-            raise RuntimeError(
-                "the username or repo_name is not provided. "
+            # step 2-2
+            tmp_dir = tempfile.mkdtemp()
+            io_utils.copy_dir(app_path, tmp_dir)
+
+            # step 2-3
+            _replace_placeholders(
+                target_dir=tmp_dir,
+                placeholders=space_config["placeholders"]
+                if "placeholders" in space_config
+                else None,
+                model_project=project_name,
+                model_run=found_run.path[-1],
+                model_name=model_name,
+                model_version=model_version,
+                model_filename=compressed_model_file,
+                additional_replacements=space_config.get("additional_replacements", None),
             )
 
-        if "hf_access_token" not in space_config:
-            raise RuntimeError(
-                "the access token to Hugging Face Hub is not provided. "
-            )            
+            # step 2-4
+            local_path = "hf_space"
+            repository = _clone_and_checkout(
+                repo_url=repo_url,
+                local_path=local_path,
+                access_token=access_token,
+            )
 
-        repo_url_prefix = "https://huggingface.co"
-        repo_id = f'{space_config["hf_username"]}/{space_config["hf_repo_name"]}'
-        repo_url = f"{repo_url_prefix}/spaces/{repo_id}"
+            # step 2-5
+            _replace_files([tmp_dir], local_path)
 
-        app_path = space_config["app_path"]
-        app_path = app_path.replace(".", "/")
+            # step 2-6
+            _push_to_remote_repo(
+                repo=repository,
+                commit_msg=f"upload {model_version} model",
+            )
 
-        access_token = space_config["hf_access_token"]
-        space_sdk = space_config.get("space_sdk", "gradio")
-
-        # step 2-1
-        _create_remote_repo(
-            access_token=access_token,
-            repo_id=repo_id,
-            space_sdk=space_sdk
-        )
-
-        # step 2-2
-        tmp_dir = tempfile.mkdtemp()
-        io_utils.copy_dir(app_path, tmp_dir)
-
-        # step 2-3
-        _replace_placeholders(
-            target_dir=tmp_dir,
-            placeholders=space_config["placeholders"]
-            if "placeholders" in space_config
-            else None,
-            model_project=project_name,
-            model_name=model_name,
-            model_version=model_version,
-            model_filename=compressed_model_file,
-            additional_replacements=space_config.get("additional_replacements", None),
-        )
-
-        # step 2-4
-        local_path = "hf_space"
-        repository = _clone_and_checkout(
-            repo_url=repo_url,
-            local_path=local_path,
-            access_token=access_token,
-        )
-
-        # step 2-5
-        _replace_files([tmp_dir], local_path)
-
-        # step 2-6
-        _push_to_remote_repo(
-            repo=repository,
-            commit_msg=f"upload {model_version} model",
-        )
-
-        outputs["space_url"] = repo_url
+            outputs["space_url"] = repo_url
 
     return outputs
