@@ -310,7 +310,7 @@ def deploy_model_for_wandb_model_registry(
 
         repo_url_prefix = "https://huggingface.co"
         repo_id = f'{space_config["hf_username"]}/{space_config["hf_repo_name"]}'
-        repo_url = f"{repo_url_prefix}/{repo_id}"
+        repo_url = f"{repo_url_prefix}/spaces/{repo_id}"
 
         app_path = space_config["app_path"]
         app_path = app_path.replace(".", "/")
