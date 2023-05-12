@@ -37,5 +37,5 @@ Again, in order to simplify and focus on the purpose of this project, we are goi
 - [X] integrate GCP's [Vertex AI](https://cloud.google.com/vertex-ai) with [GitHub Action](https://github.com/features/actions)
 - [ ] write a notebook for the new custom component (`WandBPusher`)
 - [ ] write a notebook to integrate `WandBPusher` component into the existing TFX pipeline
-- [ ] port `WandBPusher` into the existing standadone TFX pipeline
-- [ ] modify `WandBPusher` to push prototype application to Hugging Face Space Hub
+- [X] port `WandBPusher` into the existing standadone TFX pipeline
+- [X] modify `WandBPusher` to push prototype application to Hugging Face Space Hub
