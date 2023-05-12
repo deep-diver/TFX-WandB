@@ -32,7 +32,7 @@ jobs:
       uses: 'google-github-actions/auth@v0'
       if: steps.training-pipeline-change.outputs.src == 'true'
       with:
-        credentials_json: secrets.GCP_ML_172005
+        credentials_json: ${{ secrets.GCP_ML_172005 }}
 
     - name: 'Set up Cloud SDK'
       uses: 'google-github-actions/setup-gcloud@v1'
