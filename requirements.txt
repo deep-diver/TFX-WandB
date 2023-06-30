@@ -1,4 +1,4 @@
-tfx
+tfx==2.12
 kfp
 transformers
 pillow
